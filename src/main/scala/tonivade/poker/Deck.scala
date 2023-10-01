@@ -14,34 +14,34 @@ object Suit {
   val all = List(Clubs, Spades, Diamonds, Hearts)
 }
 
-sealed trait Figure extends Ordered[Figure] {
+sealed trait Rank extends Ordered[Rank] {
   val value: Int
-  def compare(that: Figure): Int = this.value - that.value
+  def compare(that: Rank): Int = this.value - that.value
 }
-case object Two extends Figure { override val value = 0 }
-case object Three extends Figure { override val value = 1 }
-case object Four extends Figure { override val value = 2 }
-case object Five extends Figure { override val value = 3 }
-case object Six extends Figure { override val value = 4 }
-case object Seven extends Figure { override val value = 5 }
-case object Eight extends Figure { override val value = 6 }
-case object Nine extends Figure { override val value = 7 }
-case object Ten extends Figure { override val value = 8 }
-case object Jack extends Figure { override val value = 9 }
-case object Queen extends Figure { override val value = 10 }
-case object King extends Figure { override val value = 11 }
-case object Ace extends Figure { override val value = 12 }
-object Figure {
+case object Two extends Rank { override val value = 0 }
+case object Three extends Rank { override val value = 1 }
+case object Four extends Rank { override val value = 2 }
+case object Five extends Rank { override val value = 3 }
+case object Six extends Rank { override val value = 4 }
+case object Seven extends Rank { override val value = 5 }
+case object Eight extends Rank { override val value = 6 }
+case object Nine extends Rank { override val value = 7 }
+case object Ten extends Rank { override val value = 8 }
+case object Jack extends Rank { override val value = 9 }
+case object Queen extends Rank { override val value = 10 }
+case object King extends Rank { override val value = 11 }
+case object Ace extends Rank { override val value = 12 }
+object Rank {
   val all = List(Ace, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King)
 }
 
-case class Card(suit: Suit, figure: Figure)
+case class Card(suit: Suit, rank: Rank)
 
 object Card {
   val all: Seq[Card] = for {
     suit <- Suit.all
-    figure <- Figure.all
-  } yield Card(suit, figure)
+    rank <- Rank.all
+  } yield Card(suit, rank)
 }
 
 case class Deck(cards: Seq[Card]) {

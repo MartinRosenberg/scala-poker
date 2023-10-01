@@ -1,7 +1,7 @@
-## Scala Poker
+# Scala Poker
 
-It's only a project to play with scala implementing the texas hold'em poker rules
+A project to play with Scala implementing the Texas hold 'em poker rules.
 
 ## License
 
-This project is release under MIT License
+This project is released under the MIT License.

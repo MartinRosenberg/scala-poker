@@ -39,50 +39,50 @@ class PokerSpec extends AnyFlatSpec with Matchers {
     showdown <- nextPhase(river)
   } yield showdown
 
-  "Strait" should "value be 4" in {
-    Strait.value should be (4)
+  "Straight value" should "be 4" in {
+    Straight.value should be (4)
   }
 
-  "Strait" should "be grater than Pair" in {
-    Strait.compare(Pair) should be > 0
+  "Straight" should "be greater than Pair" in {
+    Straight.compare(Pair) should be > 0
   }
   
   "Game Dealer" should "be toni" in {
     game.dealer should be (toni)
   }
   
-  "Game Small Blind" should "be pepe" in {
+  "Game SmallBlind" should "be pepe" in {
     game.smallBlind should be (pepe)
   }
   
-  "Game Big Blind" should "be paco" in {
+  "Game BigBlind" should "be paco" in {
     game.bigBlind should be (paco)
   }
   
-  "Game Hand" should "starts with an empty bet" in {
+  "Game Hand" should "start with an empty bet" in {
     val hand = preFlop.runA(deck).unsafeRunSync()
     hand.pot should be (0)
   }
   
-  "Hand Cards with 3 card" should "have one combination" in {
+  "HandCards with 3 cards" should "have 1 combination" in {
     val cards = HandCards(Card(Clubs, Two), Card(Spades, Three), Card(Hearts, Queen))
 
     cards.combinations.size should be (1)
   }
   
-  "Hand Cards with 4 cards" should "have 4 combinations" in {
+  "HandCards with 4 cards" should "have 4 combinations" in {
     val cards = HandCards(Card(Clubs, Two), Card(Spades, Three), Card(Hearts, Queen), Some(Card(Diamonds, Jack)))
     
     cards.combinations.size should be (4)
   }
   
-  "Hand Cards with 5 cards" should "have 6 combinations" in {
+  "HandCards with 5 cards" should "have 6 combinations" in {
     val cards = HandCards(Card(Clubs, Two), Card(Spades, Three), Card(Hearts, Queen), Some(Card(Diamonds, Jack)), Some(Card(Hearts, Four)))
     
     cards.combinations.size should be (10)
   }
   
-  "GameHand in preFlop" should "no have winner" in {
+  "GameHand in PreFlop" should "have no winner" in {
     val toniHand = PlayerHand(toni, Dealer, Card(Clubs, Ace), Card(Spades, Ace))
     val pacoHand = PlayerHand(paco, SmallBlind, Card(Clubs, Four), Card(Spades, Five))
     val pepeHand = PlayerHand(pepe, BigBlind, Card(Hearts, Ace), Card(Diamonds, King))
@@ -91,7 +91,7 @@ class PokerSpec extends AnyFlatSpec with Matchers {
     hand.winner should be (None)
   }
   
-  "GameHand with tree aces" should "win to pair" in {
+  "GameHand with ThreeOfAKind" should "win against Pair" in {
     val toniHand = PlayerHand(toni, Dealer, Card(Clubs, Ace), Card(Spades, Ace))
     val pacoHand = PlayerHand(paco, SmallBlind, Card(Clubs, Four), Card(Spades, Five))
     val pepeHand = PlayerHand(pepe, BigBlind, Card(Hearts, Ace), Card(Diamonds, King))
@@ -104,7 +104,7 @@ class PokerSpec extends AnyFlatSpec with Matchers {
     winner should be (toni)
   }
   
-  "GameHand with flull king aces" should "win to three of a kind" in {
+  "GameHand with FullHouse" should "win against ThreeOfAKind" in {
     val toniHand = PlayerHand(toni, Dealer, Card(Clubs, Ace), Card(Spades, Ace))
     val pacoHand = PlayerHand(paco, SmallBlind, Card(Clubs, Four), Card(Spades, Five))
     val pepeHand = PlayerHand(pepe, BigBlind, Card(Hearts, Ace), Card(Diamonds, King))
@@ -117,37 +117,37 @@ class PokerSpec extends AnyFlatSpec with Matchers {
     winner should be (pepe)
   }
   
-  "Game Hand" should "start with a state PreFlop" in {
+  "GameHand" should "start with a state PreFlop" in {
     val hand = preFlop.runA(deck).unsafeRunSync()
 
     hand.phase should be (PreFlop)
   }
   
-  "Game Hand" should "Flop follow PreFlop" in {
+  "GameHand" should "Flop follow PreFlop" in {
     val hand = flop.runA(deck).unsafeRunSync()
 
     hand.phase should be (Flop)
   }
   
-  "Game Hand" should "Turn follow Flop" in {
+  "GameHand" should "Turn follow Flop" in {
     val hand = turn.runA(deck).unsafeRunSync()
 
     hand.phase should be (Turn)
   }
   
-  "Game Hand" should "River follow Turn" in {
+  "GameHand" should "River follow Turn" in {
     val hand = river.runA(deck).unsafeRunSync()
 
     hand.phase should be (River)
   }
   
-  "Game Hand" should "Showdown follow River" in {
+  "GameHand" should "Showdown follow River" in {
     val hand = showdown.runA(deck).unsafeRunSync()
 
     hand.phase should be (Showdown)
   }
   
-  "Game Hand" should "be updated with two raises two calls to 6" in {
+  "GameHand" should "be updated with two Raises two Calls to 6" in {
     val hand = preFlop.runA(deck).unsafeRunSync()
 
     val newHand = hand
@@ -160,7 +160,7 @@ class PokerSpec extends AnyFlatSpec with Matchers {
     newHand.maxBet should be (2)
   }
   
-  "Bet turn" should "be next after dealer" in {
+  "Bet turn" should "be next after Dealer Player" in {
     val toniHand = PlayerHand(toni, Dealer, Card(Clubs, Ace), Card(Spades, Ace))
     val pacoHand = PlayerHand(paco, SmallBlind, Card(Clubs, Four), Card(Spades, Five))
     val pepeHand = PlayerHand(pepe, BigBlind, Card(Hearts, Ace), Card(Diamonds, King))
@@ -170,7 +170,7 @@ class PokerSpec extends AnyFlatSpec with Matchers {
     bets.nextTurn.turn should be (paco)
   }
   
-  "Bet turn nextTurn" should "be next user" in {
+  "Bet turn nextTurn" should "be next Player" in {
     val toniHand = PlayerHand(toni, Dealer, Card(Clubs, Ace), Card(Spades, Ace))
     val pacoHand = PlayerHand(paco, SmallBlind, Card(Clubs, Four), Card(Spades, Five))
     val pepeHand = PlayerHand(pepe, BigBlind, Card(Hearts, Ace), Card(Diamonds, King))
@@ -180,7 +180,7 @@ class PokerSpec extends AnyFlatSpec with Matchers {
     bets.nextTurn.nextTurn.turn should be (pepe)
   }
   
-  "Bet turn nextTurn nextTurn" should "be next user" in {
+  "Bet turn nextTurn nextTurn" should "be next Player" in {
     val toniHand = PlayerHand(toni, Dealer, Card(Clubs, Ace), Card(Spades, Ace))
     val pacoHand = PlayerHand(paco, SmallBlind, Card(Clubs, Four), Card(Spades, Five))
     val pepeHand = PlayerHand(pepe, BigBlind, Card(Hearts, Ace), Card(Diamonds, King))
@@ -190,7 +190,7 @@ class PokerSpec extends AnyFlatSpec with Matchers {
     bets.nextTurn.nextTurn.nextTurn.turn should be (toni)
   }
   
-  "Bet turn in preflop for big blind user" should "only can raise" in {
+  "Bet turn in PreFlop for BigBlind Player" should "only can Raise" in {
     val toniHand = PlayerHand(toni, Dealer, Card(Clubs, Ace), Card(Spades, Ace))
     val pacoHand = PlayerHand(paco, SmallBlind, Card(Clubs, Four), Card(Spades, Five))
     val pepeHand = PlayerHand(pepe, BigBlind, Card(Hearts, Ace), Card(Diamonds, King))
@@ -200,7 +200,7 @@ class PokerSpec extends AnyFlatSpec with Matchers {
     bets.options(pepe) should be (List(Raise(1)))
   }
   
-  "Bet turn in preflop for big blind user" should "do any action after first round" in {
+  "Bet turn in PreFlop for BigBlind Player" should "do any Action after first round" in {
     val toniHand = PlayerHand(toni, Dealer, Card(Clubs, Ace), Card(Spades, Ace))
     val pacoHand = PlayerHand(paco, SmallBlind, Card(Clubs, Four), Card(Spades, Five))
     val pepeHand = PlayerHand(pepe, BigBlind, Card(Hearts, Ace), Card(Diamonds, King))
@@ -210,7 +210,7 @@ class PokerSpec extends AnyFlatSpec with Matchers {
     bets.options(paco) should be (List(Fold, Check, Raise(1)))
   }
   
-  "Bet turn in preflop for small blind user" should "only can raise" in {
+  "Bet turn in PreFlop for SmallBlind Player" should "only can Raise" in {
     val toniHand = PlayerHand(toni, Dealer, Card(Clubs, Ace), Card(Spades, Ace))
     val pacoHand = PlayerHand(paco, SmallBlind, Card(Clubs, Four), Card(Spades, Five))
     val pepeHand = PlayerHand(pepe, BigBlind, Card(Hearts, Ace), Card(Diamonds, King))
@@ -220,7 +220,7 @@ class PokerSpec extends AnyFlatSpec with Matchers {
     bets.options(paco) should be (List(Raise(1)))
   }
   
-  "Bet turn in preflop for small blind user" should "do any action after first round" in {
+  "Bet turn in PreFlop for SmallBlind Player" should "do any Action after first round" in {
     val toniHand = PlayerHand(toni, Dealer, Card(Clubs, Ace), Card(Spades, Ace))
     val pacoHand = PlayerHand(paco, SmallBlind, Card(Clubs, Four), Card(Spades, Five))
     val pepeHand = PlayerHand(pepe, BigBlind, Card(Hearts, Ace), Card(Diamonds, King))
@@ -230,7 +230,7 @@ class PokerSpec extends AnyFlatSpec with Matchers {
     bets.options(paco) should be (List(Fold, Check, Raise(1)))
   }
   
-  "Bet turn in flop for small blind user" should "do any action after first round" in {
+  "Bet turn in Flop for SmallBlind Player" should "do any Action after first round" in {
     val toniHand = PlayerHand(toni, Dealer, Card(Clubs, Ace), Card(Spades, Ace))
     val pacoHand = PlayerHand(paco, SmallBlind, Card(Clubs, Four), Card(Spades, Five))
     val pepeHand = PlayerHand(pepe, BigBlind, Card(Hearts, Ace), Card(Diamonds, King))
@@ -240,7 +240,7 @@ class PokerSpec extends AnyFlatSpec with Matchers {
     bets.options(paco) should be (List(Fold, Check, Raise(1)))
   }
   
-  "Bet turn in preflop for dealer user" should "do any action" in {
+  "Bet turn in PreFlop for Dealer Player" should "do any Action" in {
     val toniHand = PlayerHand(toni, Dealer, Card(Clubs, Ace), Card(Spades, Ace))
     val pacoHand = PlayerHand(paco, SmallBlind, Card(Clubs, Four), Card(Spades, Five))
     val pepeHand = PlayerHand(pepe, BigBlind, Card(Hearts, Ace), Card(Diamonds, King))
@@ -250,7 +250,7 @@ class PokerSpec extends AnyFlatSpec with Matchers {
     bets.options(toni) should be (List(Fold, Check, Raise(1)))
   }
   
-  "Bet turn in preflop for dealer user with raise" should "do any action but call instead of check" in {
+  "Bet turn in PreFlop for Dealer Player with Raise" should "do any Action but Call instead of Check" in {
     val toniHand = PlayerHand(toni, Dealer, Card(Clubs, Ace), Card(Spades, Ace))
     val pacoHand = PlayerHand(paco, SmallBlind, Card(Clubs, Four), Card(Spades, Five))
     val pepeHand = PlayerHand(pepe, BigBlind, Card(Hearts, Ace), Card(Diamonds, King))
