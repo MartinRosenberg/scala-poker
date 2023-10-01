@@ -1,9 +1,10 @@
 package tonivade.poker
 
-import scala.util.Random
 import cats.data.StateT
-import cats.data.StateT._
+import cats.data.StateT.*
 import cats.effect.IO
+
+import scala.util.Random
 
 enum Suit {
   case Clubs, Spades, Diamonds, Hearts

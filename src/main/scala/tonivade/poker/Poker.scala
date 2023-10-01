@@ -1,10 +1,10 @@
 package tonivade.poker
 
+import cats.Monad
+import cats.data.StateT
+import cats.data.StateT.*
 import cats.effect.IO
 import cats.effect.unsafe.implicits.global
-import cats.data.StateT
-import cats.data.StateT._
-import cats.Monad
 
 enum HandPhase {
   case PreFlop, Flop, Turn, River, Showdown
@@ -22,7 +22,7 @@ enum Action {
 case class Player(name: String, wallet: Int = 500)
 
 object Player {
-  import Console._
+  import Console.*
 
   type Winner = (Player, FullHand)
   
@@ -113,7 +113,7 @@ case class GameHand(phase: HandPhase, players: List[PlayerHand], cards: Option[H
 }
 
 object GameHand {
-  import Console._
+  import Console.*
 
   def runHandLoop(game: Game): GameHand = 
     handLoop(game).runA(Deck.shuffle).unsafeRunSync()
@@ -221,7 +221,7 @@ case class BetTurn(hand: GameHand, players: List[Player], bets: List[Action] = N
 }
 
 object BetTurn {
-  import Console._
+  import Console.*
   
   def runBetLoop(hand: GameHand): StateT[IO, Deck, GameHand] = 
     pure(betLoop.runS(from(hand)).unsafeRunSync().hand)
@@ -277,7 +277,7 @@ case class Game(players: List[Player], round: Int = 1) {
 }
 
 object Game {
-  import Console._
+  import Console.*
   
   def start(players: List[Player]): StateT[IO, Game, Unit] = set(Game(players))
   
