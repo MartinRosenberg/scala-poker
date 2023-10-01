@@ -6,31 +6,17 @@ import cats.data.StateT
 import cats.data.StateT._
 import cats.Monad
 
-sealed trait HandPhase
-object HandPhase {
-  case object PreFlop extends HandPhase
-  case object Flop extends HandPhase
-  case object Turn extends HandPhase
-  case object River extends HandPhase
-  case object Showdown extends HandPhase
+enum HandPhase {
+  case PreFlop, Flop, Turn, River, Showdown
 }
 
-sealed trait Role
-object Role {
-  case object Regular extends Role
-  case object Dealer extends Role
-  case object SmallBlind extends Role
-  case object BigBlind extends Role
-  case object Folded extends Role
+enum Role {
+  case Regular, Dealer, SmallBlind, BigBlind, Folded
 }
 
-sealed trait Action
-object Action {
-  case object Fold extends Action
-  case object Check extends Action
-  case object Call extends Action
-  case class Raise(raise: Int) extends Action
-  case object AllIn extends Action
+enum Action {
+  case Fold, Check, Call, AllIn
+  case Raise(raise: Int)
 }
 
 case class Player(name: String, wallet: Int = 500)

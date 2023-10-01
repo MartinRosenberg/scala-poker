@@ -63,7 +63,7 @@ object Hand {
 case class FullHand(card1: Card, card2: Card, card3: Card, card4: Card, card5: Card) extends Ordered[FullHand] {
   lazy val ranks: List[Rank] = toList.map(_.rank)
   lazy val suits: List[Suit] = toList.map(_.suit)
-  lazy val values: List[Int] = ranks.map(_.value)
+  lazy val values: List[Int] = ranks.map(_.ordinal)
 
   lazy val hands: List[Hand] = Hand.all.filter(_.eval(this))
   lazy val bestHand: Hand = hands.max
