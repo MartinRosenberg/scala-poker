@@ -1,6 +1,7 @@
 package tonivade.poker
 
 import cats.effect.IO
+import cats.effect.unsafe.implicits.global
 import cats.data.StateT
 import cats.data.StateT._
 import cats.Monad

@@ -71,7 +71,7 @@ case class FullHand(card1: Card, card2: Card, card3: Card, card4: Card, card5: C
   def compare(that: FullHand): Int = this.bestHand compare that.bestHand
 
   def sameSuit: Boolean = suits.distinct.size == 1
-  def count: Map[Rank, Int] = toList.groupBy(_.rank).mapValues(_.size)
+  def count: Map[Rank, Int] = toList.groupBy(_.rank).view.mapValues(_.size).toMap
   def contains(rank: Rank): Boolean = ranks.contains(rank)
   def max: Rank = ranks.max
   def min: Rank = ranks.min
