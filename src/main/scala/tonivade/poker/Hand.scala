@@ -5,60 +5,59 @@ sealed trait Hand extends Ordered[Hand] {
   def eval(hand: FullHand): Boolean
   def compare(that: Hand): Int = this.value - that.value
 }
-
-case object HighCard extends Hand {
-  val value = 0
-  def eval(hand: FullHand): Boolean = true
-}
-
-case object Pair extends Hand {
-  val value = 1
-  def eval(hand: FullHand): Boolean = hand.count.count(_._2 == 2) == 1
-}
-
-case object TwoPairs extends Hand {
-  val value = 2
-  def eval(hand: FullHand): Boolean = hand.count.count(_._2 == 2) == 2
-}
-
-case object ThreeOfAKind extends Hand {
-  val value = 3
-  def eval(hand: FullHand): Boolean = hand.count.exists(_._2 == 3)
-}
-
-case object Straight extends Hand {
-  val value = 4
-  def eval(hand: FullHand): Boolean = hand.conseq == 5
-}
-
-case object Flush extends Hand {
-  val value = 5
-  def eval(hand: FullHand): Boolean = hand.sameSuit
-}
-
-case object FullHouse extends Hand {
-  val value = 6
-  def eval(hand: FullHand): Boolean =
-    hand.count.exists(_._2 == 3) && hand.count.exists(_._2 == 2)
-}
-
-case object FourOfAKind extends Hand {
-  val value = 7
-  def eval(hand: FullHand): Boolean = hand.count.exists(_._2 == 4)
-}
-
-case object StraightFlush extends Hand {
-  val value = 8
-  def eval(hand: FullHand): Boolean = hand.sameSuit && hand.conseq == 5
-}
-
-case object RoyalFlush extends Hand {
-  val value = 9
-  def eval(hand: FullHand): Boolean = hand.sameSuit && hand.conseq == 5 && hand.min == Ten
-}
-
 object Hand {
-  val all = List(RoyalFlush, StraightFlush, FourOfAKind, FullHouse, Flush, Straight, ThreeOfAKind, TwoPairs, Pair, HighCard)
+  case object HighCard extends Hand {
+    val value = 0
+    def eval(hand: FullHand): Boolean = true
+  }
+
+  case object Pair extends Hand {
+    val value = 1
+    def eval(hand: FullHand): Boolean = hand.count.count(_._2 == 2) == 1
+  }
+
+  case object TwoPairs extends Hand {
+    val value = 2
+    def eval(hand: FullHand): Boolean = hand.count.count(_._2 == 2) == 2
+  }
+
+  case object ThreeOfAKind extends Hand {
+    val value = 3
+    def eval(hand: FullHand): Boolean = hand.count.exists(_._2 == 3)
+  }
+
+  case object Straight extends Hand {
+    val value = 4
+    def eval(hand: FullHand): Boolean = hand.conseq == 5
+  }
+
+  case object Flush extends Hand {
+    val value = 5
+    def eval(hand: FullHand): Boolean = hand.sameSuit
+  }
+
+  case object FullHouse extends Hand {
+    val value = 6
+    def eval(hand: FullHand): Boolean =
+      hand.count.exists(_._2 == 3) && hand.count.exists(_._2 == 2)
+  }
+
+  case object FourOfAKind extends Hand {
+    val value = 7
+    def eval(hand: FullHand): Boolean = hand.count.exists(_._2 == 4)
+  }
+
+  case object StraightFlush extends Hand {
+    val value = 8
+    def eval(hand: FullHand): Boolean = hand.sameSuit && hand.conseq == 5
+  }
+
+  case object RoyalFlush extends Hand {
+    val value = 9
+    def eval(hand: FullHand): Boolean = hand.sameSuit && hand.conseq == 5 && hand.min == Rank.Ten
+  }
+
+  val all: List[Hand] = List(RoyalFlush, StraightFlush, FourOfAKind, FullHouse, Flush, Straight, ThreeOfAKind, TwoPairs, Pair, HighCard)
 }
 
 case class FullHand(card1: Card, card2: Card, card3: Card, card4: Card, card5: Card) extends Ordered[FullHand] {

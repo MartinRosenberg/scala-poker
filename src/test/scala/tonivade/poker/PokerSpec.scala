@@ -6,7 +6,13 @@ import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
 class PokerSpec extends AnyFlatSpec with Matchers {
+  import Action._
   import GameHand._
+  import Hand._
+  import HandPhase._
+  import Rank._
+  import Role._
+  import Suit._
   
   val toni: Player = Player("toni")
   val pepe: Player = Player("pepe")

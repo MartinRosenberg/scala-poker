@@ -6,25 +6,31 @@ import cats.data.StateT._
 import cats.Monad
 
 sealed trait HandPhase
-case object PreFlop extends HandPhase
-case object Flop extends HandPhase
-case object Turn extends HandPhase
-case object River extends HandPhase
-case object Showdown extends HandPhase
+object HandPhase {
+  case object PreFlop extends HandPhase
+  case object Flop extends HandPhase
+  case object Turn extends HandPhase
+  case object River extends HandPhase
+  case object Showdown extends HandPhase
+}
 
 sealed trait Role
-case object Regular extends Role
-case object Dealer extends Role
-case object SmallBlind extends Role
-case object BigBlind extends Role
-case object Folded extends Role
+object Role {
+  case object Regular extends Role
+  case object Dealer extends Role
+  case object SmallBlind extends Role
+  case object BigBlind extends Role
+  case object Folded extends Role
+}
 
 sealed trait Action
-case object Fold extends Action
-case object Check extends Action
-case object Call extends Action
-case class Raise(raise: Int) extends Action
-case object AllIn extends Action
+object Action {
+  case object Fold extends Action
+  case object Check extends Action
+  case object Call extends Action
+  case class Raise(raise: Int) extends Action
+  case object AllIn extends Action
+}
 
 case class Player(name: String, wallet: Int = 500)
 
@@ -37,15 +43,15 @@ object Player {
     for {
       _ <- print(s"${player.name} turn")
       string <- read
-    } yield toAction(string).getOrElse(Check)
+    } yield toAction(string).getOrElse(Action.Check)
     
   def toAction(string: String): Option[Action] = 
     string match {
-      case "fold" => Some(Fold)
-      case "check" => Some(Check)
-      case "allin" => Some(AllIn)
-      case "call" => Some(Call)
-      case "raise" => Some(Raise(1))
+      case "fold" => Some(Action.Fold)
+      case "check" => Some(Action.Check)
+      case "allin" => Some(Action.AllIn)
+      case "call" => Some(Action.Call)
+      case "raise" => Some(Action.Raise(1))
       case _ => None
     }
 }
@@ -60,14 +66,12 @@ case class HandCards(card1: Card, card2: Card, card3: Card, card4: Option[Card] 
 }
 
 case class PlayerHand(player: Player, role: Role, card1: Card, card2: Card, bet: Int = 0) {
-  import Player._
-
-  def bestHand(cards: HandCards): Winner = 
+  def bestHand(cards: HandCards): Player.Winner =
     (player, hands(cards).reduce((p1, p2) => if (p1.bestHand > p2.bestHand) p1 else p2))
     
   def remaining: Int = player.wallet - bet
   
-  def fold: PlayerHand = copy(role = Folded)
+  def fold: PlayerHand = copy(role = Role.Folded)
   def allIn: PlayerHand = copy(bet = player.wallet)
   def update(value: Int): PlayerHand = copy(bet = bet + value)
 
@@ -78,11 +82,9 @@ case class PlayerHand(player: Player, role: Role, card1: Card, card2: Card, bet:
 }
 
 case class GameHand(phase: HandPhase, players: List[PlayerHand], cards: Option[HandCards]) {
-  import Player._
-  
   lazy val pot: Int = players.map(_.bet).sum
   lazy val maxBet: Int = players.map(_.bet).max
-  lazy val notFolded: List[PlayerHand] = players.filter(_.role != Folded)
+  lazy val notFolded: List[PlayerHand] = players.filter(_.role != Role.Folded)
 
   def toPhase(phase: HandPhase): GameHand = copy(phase = phase)
   def setFlop(cards: HandCards): GameHand = copy(cards = Some(cards))
@@ -91,16 +93,16 @@ case class GameHand(phase: HandPhase, players: List[PlayerHand], cards: Option[H
   
   def update(player: Player, action: Action): GameHand =
     action match {
-      case Fold => fold(player)
-      case Check => check(player)
-      case AllIn => allIn(player)
-      case Call => call(player)
-      case Raise(value) => raise(player, value)
+      case Action.Fold => fold(player)
+      case Action.Check => check(player)
+      case Action.AllIn => allIn(player)
+      case Action.Call => call(player)
+      case Action.Raise(value) => raise(player, value)
     }
 
   def find(player: Player): Option[PlayerHand] = players.find(_.player == player)
   
-  def winner: Option[Winner] = 
+  def winner: Option[Player.Winner] =
     cards.map(c => players.map(_.bestHand(c)).reduce((p1, p2) => if (p1._2 > p2._2) p1 else p2))
   
   private def fold(player: Player): GameHand = update(player)(_.fold)
@@ -125,12 +127,9 @@ case class GameHand(phase: HandPhase, players: List[PlayerHand], cards: Option[H
 
 object GameHand {
   import Console._
-  import Deck._
-  import BetTurn._
-  import Player._
-  
+
   def runHandLoop(game: Game): GameHand = 
-    handLoop(game).runA(shuffle).unsafeRunSync()
+    handLoop(game).runA(Deck.shuffle).unsafeRunSync()
   
   def handLoop(game: Game): StateT[IO, Deck, GameHand] = 
     for {
@@ -145,46 +144,46 @@ object GameHand {
   def nextGameHand(game: Game): StateT[IO, Deck, GameHand] = 
     for {
       players <- playerList(game)
-    } yield GameHand(PreFlop, players, None)
+    } yield GameHand(HandPhase.PreFlop, players, None)
     
   def phaseLoop(hand: GameHand): StateT[IO, Deck, GameHand] = 
     for {
       _ <- print(s"current pot ${hand.pot} in ${hand.phase}")
       _ <- print(hand)
-      bets <- runBetLoop(hand)
+      bets <- BetTurn.runBetLoop(hand)
       _ <- print(bets)
       nextHand <- nextPhase(bets)
     } yield nextHand
   
   def nextPhase(current: GameHand): StateT[IO, Deck, GameHand] = 
     current.phase match {
-      case PreFlop => toFlop(current)
-      case Flop => toTurn(current)
-      case Turn => toRiver(current)
-      case River => toShowdown(current)
-      case Showdown => pure(current)
+      case HandPhase.PreFlop => toFlop(current)
+      case HandPhase.Flop => toTurn(current)
+      case HandPhase.Turn => toRiver(current)
+      case HandPhase.River => toShowdown(current)
+      case HandPhase.Showdown => pure(current)
     }
 
-  def winner(current: GameHand): StateT[IO, Deck, Option[Winner]] =
+  def winner(current: GameHand): StateT[IO, Deck, Option[Player.Winner]] =
     pure(current.winner)
   
   private def toFlop(current: GameHand): StateT[IO, Deck, GameHand] = 
     for {
       cards <- Deck.burnAndTake3
-    } yield current.toPhase(Flop).setFlop(cards)
+    } yield current.toPhase(HandPhase.Flop).setFlop(cards)
   
   private def toTurn(current: GameHand): StateT[IO, Deck, GameHand] =
     for {
       card <- Deck.burnAndTake 
-    } yield current.toPhase(Turn).setTurn(card)
+    } yield current.toPhase(HandPhase.Turn).setTurn(card)
   
   private def toRiver(current: GameHand): StateT[IO, Deck, GameHand] =
     for {
       card <- Deck.burnAndTake 
-    } yield current.toPhase(River).setRiver(card)
+    } yield current.toPhase(HandPhase.River).setRiver(card)
     
   private def toShowdown(current: GameHand): StateT[IO, Deck, GameHand] =
-    pure(current.toPhase(Showdown))
+    pure(current.toPhase(HandPhase.Showdown))
 
   private def playerList(game: Game): StateT[IO, Deck, List[PlayerHand]] = 
     game.players.map(newPlayerHand(_, game))
@@ -202,7 +201,7 @@ object GameHand {
 }
 
 case class BetTurn(hand: GameHand, players: List[Player], bets: List[Action] = Nil) {
-  lazy val allPlayersSpeak: Boolean = bets.filterNot(_ == Fold).size >= hand.notFolded.size
+  lazy val allPlayersSpeak: Boolean = bets.filterNot(_ == Action.Fold).size >= hand.notFolded.size
   lazy val allBetsBalanced: Boolean = hand.notFolded.forall(_.bet == hand.maxBet)
   lazy val noMoreBets: Boolean = allPlayersSpeak && allBetsBalanced
   
@@ -213,29 +212,28 @@ case class BetTurn(hand: GameHand, players: List[Player], bets: List[Action] = N
     hand.find(player) match {
       case Some(playerHand) => 
         playerHand.role match {
-          case BigBlind => blind(playerHand) :+ Raise(1)
-          case SmallBlind => blind(playerHand) :+ Raise(1)
-          case Dealer => regular(playerHand) :+ Raise(1)
-          case Regular => regular(playerHand) :+ Raise(1)
-          case Folded => Nil
+          case Role.BigBlind => blind(playerHand) :+ Action.Raise(1)
+          case Role.SmallBlind => blind(playerHand) :+ Action.Raise(1)
+          case Role.Dealer => regular(playerHand) :+ Action.Raise(1)
+          case Role.Regular => regular(playerHand) :+ Action.Raise(1)
+          case Role.Folded => Nil
         }
       case None => Nil
     }
     
-  def canBet(player: Player): Boolean = hand.find(player).exists(_.role != Folded)
+  def canBet(player: Player): Boolean = hand.find(player).exists(_.role != Role.Folded)
   
   def update(player: Player, action: Action): BetTurn = 
     copy(hand = hand.update(player, action), bets = bets :+ action)
   
   private def blind(playerHand: PlayerHand): List[Action] = 
-    if (hand.phase != PreFlop || allPlayersSpeak) regular(playerHand) else Nil
+    if (hand.phase != HandPhase.PreFlop || allPlayersSpeak) regular(playerHand) else Nil
   private def regular(playerHand: PlayerHand): List[Action] = 
-    List(Fold, if (canCall(playerHand)) Call else Check)
+    List(Action.Fold, if (canCall(playerHand)) Action.Call else Action.Check)
   private def canCall(playerHand: PlayerHand): Boolean = hand.maxBet > playerHand.bet
 }
 
 object BetTurn {
-  import Player._
   import Console._
   
   def runBetLoop(hand: GameHand): StateT[IO, Deck, GameHand] = 
@@ -255,7 +253,7 @@ object BetTurn {
     for {
       options <- options(player)
       _ <- print(s"$player can $options")
-      action <- speak(player)
+      action <- Player.speak(player)
       _ <- update(player, action)
       _ <- print(s"${player.name} has $action")
     } yield ()
@@ -284,10 +282,10 @@ case class Game(players: List[Player], round: Int = 1) {
   
   def playerRole(player: Player): Role = 
     player match {
-      case Player(name, _) if name == dealer.name => Dealer
-      case Player(name, _) if name == smallBlind.name => SmallBlind
-      case Player(name, _) if name == bigBlind.name => BigBlind
-      case _ => Regular
+      case Player(name, _) if name == dealer.name => Role.Dealer
+      case Player(name, _) if name == smallBlind.name => Role.SmallBlind
+      case Player(name, _) if name == bigBlind.name => Role.BigBlind
+      case _ => Role.Regular
     }
 }
 

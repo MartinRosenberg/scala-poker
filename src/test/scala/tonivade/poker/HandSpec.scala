@@ -4,7 +4,10 @@ import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
 class HandSpec extends AnyFlatSpec with Matchers {
-  
+  import Hand._
+  import Rank._
+  import Suit._
+
   "Hand with all different cards" should "be a HighCard" in {
     val hand = FullHand(Card(Spades, Seven), Card(Clubs, Ace), Card(Hearts, Two), Card(Diamonds, Three), Card(Spades, Four))
 

@@ -4,7 +4,6 @@ import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
 class DeckSpec extends AnyFlatSpec with Matchers {
-
   val deck: Deck = Deck.shuffle
 
   "Deck" should "have 52 cards" in {
