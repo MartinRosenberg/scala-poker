@@ -77,6 +77,6 @@ case class FullHand(card1: Card, card2: Card, card3: Card, card4: Card, card5: C
   def min: Rank = ranks.min
   def conseq: Int = Math.max(conseq(values), conseq(values.map(x => (x + 4) % 13))) + 1
   
-  private lazy val toList: List[Card] = card1 :: card2 :: card3 :: card4 :: card5 :: Nil
+  private lazy val toList: List[Card] = List(card1, card2, card3, card4, card5)
   private def conseq(list: List[Int]): Int = list.sorted.sliding(2).count(a => a(0) + 1 == a(1))
 }

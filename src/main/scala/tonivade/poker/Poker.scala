@@ -32,12 +32,13 @@ object Player {
       string <- read
     } yield toAction(string).getOrElse(Action.Check)
     
-  def toAction(string: String): Option[Action] = 
-    string match {
+  def toAction(string: String): Option[Action] =
+    string.toLowerCase match {
       case "fold" => Some(Action.Fold)
       case "check" => Some(Action.Check)
       case "allin" => Some(Action.AllIn)
       case "call" => Some(Action.Call)
+      // TODO: Optionally read a number
       case "raise" => Some(Action.Raise(1))
       case _ => None
     }
@@ -258,20 +259,20 @@ object BetTurn {
 }
 
 case class Game(players: List[Player], round: Int = 1) {
-  def dealer: Player = players.head
-  def smallBlind: Player = players.tail.head
-  def bigBlind: Player = players.tail.tail.head
+  lazy val dealer: Player = players.head
+  lazy val smallBlind: Player = players.tail.head
+  lazy val bigBlind: Player = players.tail.tail.head
 
-  def next: Game = {
+  lazy val next: Game = {
     val newPlayers = players.filter(_.wallet > 0)
     Game(newPlayers.tail :+ newPlayers.head, round + 1)
   }
   
   def playerRole(player: Player): Role = 
-    player match {
-      case Player(name, _) if name == dealer.name => Role.Dealer
-      case Player(name, _) if name == smallBlind.name => Role.SmallBlind
-      case Player(name, _) if name == bigBlind.name => Role.BigBlind
+    player.name match {
+      case dealer.name => Role.Dealer
+      case smallBlind.name => Role.SmallBlind
+      case bigBlind.name => Role.BigBlind
       case _ => Role.Regular
     }
 }

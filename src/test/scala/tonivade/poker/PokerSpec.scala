@@ -15,9 +15,9 @@ class PokerSpec extends AnyFlatSpec with Matchers {
   import Role.*
   import Suit.*
   
-  val toni: Player = Player("toni")
-  val pepe: Player = Player("pepe")
-  val paco: Player = Player("paco")
+  val toni: Player = Player("Toni")
+  val pepe: Player = Player("Pepe")
+  val paco: Player = Player("Paco")
 
   val game: Game = Game(List(toni, pepe, paco))
   val deck: Deck = Deck.shuffle

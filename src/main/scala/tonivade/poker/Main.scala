@@ -2,7 +2,7 @@ package tonivade.poker
 
 @main
 def main(): Unit = {
-  val players = List(Player("pepe"), Player("paco"), Player("toni"), Player("curro"), Player("perico"))
+  val players = List(Player("Pepe"), Player("Paco"), Player("Toni"), Player("Curro"), Player("Perico"))
 
   val result = GameHand.runHandLoop(new Game(players))
 
